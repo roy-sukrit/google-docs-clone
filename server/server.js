@@ -73,7 +73,13 @@ const server = http.createServer(async (req, res) => {
         try {
             // Setting CORS headers
             // Replace '*' with your frontend URL
-            res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+            // res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+
+            const allowedOrigins = [process.env.CLIENT_URL];
+            const origin = req.headers.origin;
+            if (allowedOrigins.includes(origin)) {
+                 res.setHeader('Access-Control-Allow-Origin', origin);
+            }
             res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
