@@ -86,7 +86,8 @@ const server = http.createServer(async (req, res) => {
         try {
 
 
-            const data = await Document.find({}, { projection: { data: 0 } });
+            const data = await Document.find({}, { projection: { data: 0 } })
+            .sort({ updatedAt: -1 });
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(data));
         }

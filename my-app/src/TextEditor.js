@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Quill from 'quill';
 import "quill/dist/quill.snow.css"
 import io from 'socket.io-client';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams,useLocation } from 'react-router-dom';
+
 const TOOLBAR_OPTIONS = [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
     [{ font: [] }],
@@ -18,14 +19,19 @@ const TOOLBAR_OPTIONS = [
 const SAVE_INTERVAL_MS = 2000;
 
 const TextEditor = () => {
-    const { id: documentId } = useParams();
+    const { id: documentId,data } = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+
+    console.log("location.data",location);
 
     const [socket, setSocket] = useState();
     const [quill, setQuill] = useState();
 
     //socket connection
     useEffect(() => {
-        const s = io("http://localhost:3001");
+        const s = io(process.env.REACT_APP_SERVER_URL);
         setSocket(s);
 
         return () => {
