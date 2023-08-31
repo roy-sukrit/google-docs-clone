@@ -1,3 +1,4 @@
+const { log } = require("console");
 const mongoose = require("./database");
 const Document = require("./Document");
 const http = require('http');
@@ -37,7 +38,7 @@ io.on("connection", socket => {
 
         //To boradcast that there has been some changes to everyone except users
         socket.on("send-changes", delta => {
-            
+
             console.log("changes from client delta =>", delta);
 
             //All the users get the latest changes
@@ -68,20 +69,30 @@ async function findOrCreateDocument(id) {
 //HTTP Server
 const server = http.createServer(async (req, res) => {
 
+    // Setting CORS headers
+    // Replace '*' with your frontend URL
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // const allowedOrigins = [process.env.CLIENT_URL];
+    // const origin = req.headers.origin;
+    // if (allowedOrigins.includes(origin)) {
+    //      res.setHeader('Access-Control-Allow-Origin', origin);
+    // }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        console.log("options",options);
+        // Handle preflight requests
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+
     if (req.method === 'GET' && req.url === '/api/documents') {
 
         try {
-            // Setting CORS headers
-            // Replace '*' with your frontend URL
-            res.setHeader('Access-Control-Allow-Origin', '*');
 
-            // const allowedOrigins = [process.env.CLIENT_URL];
-            // const origin = req.headers.origin;
-            // if (allowedOrigins.includes(origin)) {
-            //      res.setHeader('Access-Control-Allow-Origin', origin);
-            // }
-            res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
             const data = await Document.find({}, { projection: { data: 0 } });
             res.writeHead(200, { 'Content-Type': 'application/json' });
