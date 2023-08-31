@@ -2,7 +2,7 @@
 
 This Project is an attempt to replicate Google Docs .
 
-![](doc_editor_demo.gif)
+![](doc_editor_demo.mp4)
 
 ### Live Preview - https://calm-beignet-aca17d.netlify.app/
 
