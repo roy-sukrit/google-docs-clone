@@ -10,7 +10,7 @@ const defaultValue = "";
 //Init Socket Server
 const io = require('socket.io')(process.env.SOCKET_PORT, {
     cors: {
-        origin: [process.env.CLIENT_URL],
+        origin: '*',
         methods: ['GET', 'POST']
 
     }
@@ -69,15 +69,7 @@ async function findOrCreateDocument(id) {
 //HTTP Server
 const server = http.createServer(async (req, res) => {
 
-    // Setting CORS headers
-    // Replace '*' with your frontend URL
     res.setHeader('Access-Control-Allow-Origin', '*');
-
-    // const allowedOrigins = [process.env.CLIENT_URL];
-    // const origin = req.headers.origin;
-    // if (allowedOrigins.includes(origin)) {
-    //      res.setHeader('Access-Control-Allow-Origin', origin);
-    // }
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
