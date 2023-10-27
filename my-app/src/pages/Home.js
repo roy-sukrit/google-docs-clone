@@ -84,7 +84,7 @@ const handleDelete =async (id) =>{
 
           </Card>
         </Col>
-        {'Add null check'}
+        {/* {'Add null check'} */}
         {data.map((document, index) => (
           <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
             <Card
