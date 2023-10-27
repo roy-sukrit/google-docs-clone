@@ -17,6 +17,28 @@ const Home = () => {
   
   const [messageApi, contextHolder] = message.useMessage();
 
+  const [loadApi, contextHolderLoad] = message.useMessage();
+
+  const key = 'updatable';
+
+  const openMessage = async () => {
+    loadApi.open({
+      key,
+      type: 'loading',
+      content: 'Loading...',
+    });
+
+    if(data){
+      loadApi.open({
+        key,
+        type: 'success',
+        content: 'Documents Loaded!',
+        duration: 2,
+      });
+    }
+
+  };
+
   const success = () => {
     messageApi.open({
       type: 'success',
@@ -33,20 +55,21 @@ const Home = () => {
 
   useEffect(() => {
     //Fetching Latest Documents
-   
     fetchData();
-  }, [id,data]);
+  }, []);
 
 
   
   async function fetchData() {
+    openMessage()
+
     const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/documents`,{})
       .catch(error => console.error('Error fetching data:', error));
     if (response && response.data) {
 
       setData(response.data)
       setLoading(false);
-
+   
 
     }
 
@@ -114,12 +137,9 @@ const handleDelete =async (id) =>{
           </Card>
         </Col>
         {/* {'Add null check'} */}
-        {loading &&  
-                  <Space >
-                  <Spin tip="Loading" size="large">
-      </Spin>          </Space>
-}
+      
 
+{contextHolderLoad}
 {contextHolder}
         {data.map((document, index) => (
           <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
