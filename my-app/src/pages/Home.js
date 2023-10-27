@@ -3,7 +3,7 @@ import { Form, Space } from 'antd';
 import { PlusOutlined, FileTextOutlined,
   EditOutlined, DeleteOutlined  } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Card, Row, Col ,Skeleton,Spin,message} from 'antd';
+import { Card, Row, Col,message} from 'antd';
 
 import axios from 'axios'
 const Home = () => {
@@ -11,8 +11,6 @@ const Home = () => {
   const navigate = useNavigate()
   const [data, setData] = useState([]);
   const [id, setId] = useState();
-  const [loading, setLoading] = useState(true);
-  const [deleteStatus, setDeleteStatus] = useState(true);
 
   
   const [messageApi, contextHolder] = message.useMessage();
@@ -21,7 +19,9 @@ const Home = () => {
 
   const key = 'updatable';
 
-  const openMessage = async () => {
+  const openMessage = async (operation) => {
+
+    if(operation && operation === 'LOAD'){
     loadApi.open({
       key,
       type: 'loading',
@@ -36,7 +36,7 @@ const Home = () => {
         duration: 2,
       });
     }
-
+  }
   };
 
   const success = () => {
@@ -55,20 +55,19 @@ const Home = () => {
 
   useEffect(() => {
     //Fetching Latest Documents
-    fetchData();
+    fetchData('LOAD');
   }, []);
 
 
   
-  async function fetchData() {
-    openMessage()
+  async function fetchData(operation) {
+    openMessage(operation)
 
     const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/documents`,{})
       .catch(error => console.error('Error fetching data:', error));
     if (response && response.data) {
 
       setData(response.data)
-      setLoading(false);
    
 
     }
@@ -76,17 +75,21 @@ const Home = () => {
 
   }
   //Redirecting User to /documents where a new uuid is page is created
-  const handleOk = () => {
-    navigate("/document", {
-    });
+  const handleOk = (data) => {
+    console.log("Called handleOk",data);
+
+    navigate("/document");
     form.resetFields();
   };
 
   //Opens an existing documents
   const openDocument = (id) => {
     console.log("id", id);
+    console.log("Called openDocument");
     navigate(`/documents/${id}`, {
     });
+    form.resetFields();
+
   };
 
   //Function to convert TZ to date format
@@ -105,7 +108,7 @@ const handleDelete =async (id) =>{
  if(data?.data === 'Success'){
   success();
 
-  await fetchData()
+  await fetchData('DELETE')
 
  }
  else{
@@ -119,8 +122,8 @@ const handleDelete =async (id) =>{
       <div style={{ marginBottom: '20px' }}>
         <h1>Your Documents</h1>
       </div>
-      <Row gutter={[20, 20]}>
-      <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+      <Row gutter={[20, 20]}   rowKey="Id1">
+      <Col key={'Create Document'} xs={24} sm={12} md={8} lg={6} xl={4}>
           <Card
             style={{ width: '100%' ,height:'100%' }}
             onClick={handleOk}
@@ -137,17 +140,17 @@ const handleDelete =async (id) =>{
           </Card>
         </Col>
         {/* {'Add null check'} */}
-      
 
-{contextHolderLoad}
-{contextHolder}
+        <Space>{contextHolderLoad}</Space>
+        <Space>{contextHolder}</Space>
+
+
+
         {data.map((document, index) => (
-          <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
+          <Col key={index.toString()} xs={24} sm={12} md={8} lg={6} xl={4}>
             <Card
               style={{ width: '100%',height:'100%' }}
               hoverable
-              loading={loading}
-
               actions={[
                 <DeleteOutlined 
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'red')} // Change color to red on hover
