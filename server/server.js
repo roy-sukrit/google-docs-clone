@@ -1,4 +1,3 @@
-const { log } = require("console");
 const mongoose = require("./database");
 const Document = require("./Document");
 const http = require('http');
@@ -68,13 +67,15 @@ async function findOrCreateDocument(id) {
 
 //HTTP Server
 const server = http.createServer(async (req, res) => {
+// Set CORS headers
+res.setHeader('Access-Control-Allow-Origin', '*'); // Replace with your React app's domain
+res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Add the HTTP methods you want to support
+res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Add the headers you want to support
+res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests use credentials (cookies, etc.)
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+    console.log("req.url", req.url);
     if (req.method === 'OPTIONS') {
-        console.log("options",options);
+        console.log("options");
         // Handle preflight requests
         res.writeHead(200);
         res.end();
@@ -97,7 +98,80 @@ const server = http.createServer(async (req, res) => {
 
         }
 
-    } else {
+    } 
+    // else if (req.method === 'PUT' && req.url === '/api/updateTitle') {
+
+
+    //     try{
+    //     let body = '';
+    //     req.on('data', chunk => {
+    //         body += chunk.toString(); // convert Buffer to string
+    //     });
+    //     req.on('end', async () => {
+    //         body = JSON.parse(body)
+    //         console.log("req PUT",body.id);
+    //         // const output = await Document.findByIdAndDelete(body.id);
+
+
+    //     console.log("output",output);
+
+
+
+    //     // if(output){
+
+        
+
+    //     // res.end(JSON.stringify('Success'));
+    //     // }
+
+    //     });
+
+
+    // }
+    // catch (error) {
+    //     console.log("Error in /api/delete",error);
+    //     res.end(JSON.stringify({ error }));
+
+    // }
+
+    // } 
+    else if(req.method === 'POST' && req.url === '/api/delete'){
+        
+        try {
+
+            let body = '';
+            req.on('data', chunk => {
+                body += chunk.toString(); // convert Buffer to string
+            });
+            req.on('end', async () => {
+                body = JSON.parse(body)
+                console.log("req delete",body.id);
+                const output = await Document.findByIdAndDelete(body.id);
+
+
+            console.log("output",output);
+
+
+
+            if(output){
+
+            
+
+            res.end(JSON.stringify('Success'));
+            }
+
+            });
+
+
+        }
+        catch (error) {
+            console.log("Error in /api/delete",error);
+            res.end(JSON.stringify({ error }));
+
+        }
+
+
+    }else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Not Found' }));
     }
