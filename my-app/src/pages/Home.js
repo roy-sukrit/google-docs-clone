@@ -4,6 +4,7 @@ import { PlusOutlined, FileTextOutlined,
   EditOutlined, DeleteOutlined  } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Card, Row, Col,message} from 'antd';
+import { v4 as uuidV4 } from "uuid"
 
 import axios from 'axios'
 const Home = () => {
@@ -77,18 +78,20 @@ const Home = () => {
   //Redirecting User to /documents where a new uuid is page is created
   const handleOk = (data) => {
     console.log("Called handleOk",data);
+    //Added explicit uuid to prevent error 
+    const generatedUuid = uuidV4();
 
-    navigate("/document");
-    form.resetFields();
+    navigate(`/documents/${generatedUuid}`);
+
+    // form.resetFields();
   };
 
   //Opens an existing documents
   const openDocument = (id) => {
     console.log("id", id);
     console.log("Called openDocument");
-    navigate(`/documents/${id}`, {
-    });
-    form.resetFields();
+    // navigate(`/documents/${id}`, {
+    // });
 
   };
 
@@ -122,12 +125,13 @@ const handleDelete =async (id) =>{
       <div style={{ marginBottom: '20px' }}>
         <h1>Your Documents</h1>
       </div>
-      <Row gutter={[20, 20]}   rowKey="Id1">
-      <Col key={'Create Document'} xs={24} sm={12} md={8} lg={6} xl={4}>
+      <Row gutter={[20, 20]} >
+      <Col key={'create'} xs={24} sm={12} md={8} lg={6} xl={4}>
           <Card
             style={{ width: '100%' ,height:'100%' }}
             onClick={handleOk}
             hoverable
+            key={'create'}
           >
             <PlusOutlined style={{ fontSize: '48px' }} />
 
@@ -139,18 +143,16 @@ const handleDelete =async (id) =>{
 
           </Card>
         </Col>
-        {/* {'Add null check'} */}
 
-        <Space>{contextHolderLoad}</Space>
-        <Space>{contextHolder}</Space>
-
-
+         <Space key={'Space1'}>{contextHolderLoad}</Space>
+        <Space key={'Space2'}>{contextHolder}</Space>  
 
         {data.map((document, index) => (
-          <Col key={index.toString()} xs={24} sm={12} md={8} lg={6} xl={4}>
+          <Col key={document._id} xs={24} sm={12} md={8} lg={6} xl={4}>
             <Card
               style={{ width: '100%',height:'100%' }}
               hoverable
+              key={document._id}
               actions={[
                 <DeleteOutlined 
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'red')} // Change color to red on hover
