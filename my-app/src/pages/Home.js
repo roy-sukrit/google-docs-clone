@@ -96,8 +96,8 @@ const Home = () => {
   const openDocument = (id) => {
     console.log("id", id);
     console.log("Called openDocument");
-    // navigate(`/documents/${id}`, {
-    // });
+    navigate(`/documents/${id}`, {
+    });
 
   };
 
