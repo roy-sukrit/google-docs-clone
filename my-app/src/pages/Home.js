@@ -22,14 +22,19 @@ const Home = () => {
 
   const openMessage = async (operation) => {
 
+
+    console.log("operation",operation);
     if(operation && operation === 'LOAD'){
     loadApi.open({
       key,
       type: 'loading',
       content: 'Loading...',
     });
+  }
 
-    if(data){
+    if(operation && operation === 'LOADED'){
+      console.log("operation in if",operation);
+
       loadApi.open({
         key,
         type: 'success',
@@ -38,7 +43,7 @@ const Home = () => {
       });
     }
   }
-  };
+  
 
   const success = () => {
     messageApi.open({
@@ -69,8 +74,9 @@ const Home = () => {
     if (response && response.data) {
 
       setData(response.data)
-   
+      await openMessage('LOADED')
 
+    
     }
 
 
