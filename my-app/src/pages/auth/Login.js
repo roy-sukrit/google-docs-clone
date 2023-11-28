@@ -34,7 +34,7 @@ const Login = () => {
               email:user.email,
             },
           });
-       history.push("user/history")
+       history.push("/")
    
       }
     
@@ -62,7 +62,7 @@ const Login = () => {
 
           console.log("Login Success",history);
 
-         history("user/history");
+         history("/");
 
         }})      
       .catch(err=>toast.error(err))
@@ -112,12 +112,16 @@ const Login = () => {
   return (
     <div className="container p-5">
       <div className="row">
+
+        
         <div className="col-md-6 offset-md-3">
           {loading ? (
             <h4 className="text-danger">Loading...</h4>
           ) : (
             <h4>Login</h4>
           )}
+
+
           {loginForm()}
 
           <Button

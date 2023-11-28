@@ -13,6 +13,7 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { auth } from "../../firebase";
 
 const { SubMenu, Item } = Menu;
 
@@ -27,17 +28,17 @@ const Header = () => {
 
   const handleClick = (e) => {
     // console.log(e.key);
-    setCurrent(e.key);
+    // setCurrent(e.key);
   };
 
-  const logout=()=>{
-    firebase.auth().signOut();
+  const logout=async()=>{
+    await auth.signOut();
     dispatch({
       type:"LOGOUT",
       payload:null
 
     })
-    history.push("/login")
+    history("/login")
   }
 
 
@@ -85,19 +86,21 @@ const Header = () => {
         )}
 
        
-        <Item icon={<LogoutOutlined />} onClick={logout} disabled>Logout</Item>
+        <Item icon={<LogoutOutlined />} onClick={logout}>Logout</Item>
 
       </SubMenu>
+      
       }
 
 
-      <span className="float-right mr-3">
+
+        <Item  className="padding-left 10">
       <Switch
       checked={theme === 'dark'}
       onChange={handlethemeChange}
       checkedChildren="Dark"
       unCheckedChildren="Light"
-    /></span>
+    /></Item>
    
     
     </Menu>
