@@ -9,6 +9,7 @@ import {
   AppstoreOutlined,
   SettingOutlined,
   SnippetsOutlined,
+  FileProtectOutlined,
   UserOutlined,
   UserAddOutlined,
   LogoutOutlined,
@@ -51,12 +52,10 @@ const Header = () => {
   return (
     <Menu  theme ={theme} onClick={handleClick} selectedKeys={[current]} mode="horizontal">
     
-    
-      <Item key="home" icon={<AppstoreOutlined />}>
-        <Link to="/">Home</Link>
+      <Item key="home" icon={<FileProtectOutlined />} style={{ fontFamily: "Helvetica Neue" }}>
+        <Link to="/">DocVantage</Link>
       </Item>
 
-        
 
 
       {!user && 
