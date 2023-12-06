@@ -8,6 +8,7 @@ import {useNavigate} from 'react-router-dom'
 import {
   AppstoreOutlined,
   SettingOutlined,
+  SnippetsOutlined,
   UserOutlined,
   UserAddOutlined,
   LogoutOutlined,
@@ -80,8 +81,8 @@ const Header = () => {
       <SubMenu icon={<SettingOutlined />} title={user.email && user.email.split('@')[0]} className="float-right">
        
         {user && (
-           <Item key="setting:1">
-           <Link to="user/history">Dashboard</Link>
+           <Item key="setting:1" icon={<SnippetsOutlined />}>
+           <Link to="/user/documents">Your Documents</Link>
            </Item>
         )}
 

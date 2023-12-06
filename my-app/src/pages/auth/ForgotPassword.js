@@ -4,21 +4,23 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { useNavigate } from "react-router-dom";
 
 const auth = getAuth();
 
-const ForgotPassword = ({ history }) => {
+const ForgotPassword = ({ historyy }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  
+  const history = useNavigate();
+
 
   //^Redirect if auth
-  const {user}=useSelector((state)=>({...state}));
-  
- useEffect(() => {
-   if(user && user.email) history.push("/")
-  
- }, [user]);
+  const { user } = useSelector((state) => ({ ...state }));
+
+  useEffect(() => {
+    if (user && user.email) history("/")
+
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +46,21 @@ const ForgotPassword = ({ history }) => {
   };
 
   return (
-    <div className="container col-md-6 offset-md-3 p-5">
+    <div className="d-flex flex-row bd-highlight justify-content-start flex-wrap">
+      <div className="row">
+
+      <div className="bd-highlight">
+
+        <img
+          src="https://mixkit.imgix.net/art/preview/mixkit-left-handed-man-sitting-at-a-table-writing-in-a-notebook-27-original-large.png?q=80&auto=format%2Ccompress&h=700" // Replace with the actual URL of your image
+          alt="Login Image"
+          style={{ width: '100%', height: '100%' }}
+        />
+
+      </div>
+      <div className="bd-highlight p-5 mt-5 mx-auto">
+
+
       {loading ? (
         <h4 className="text-danger">Loading</h4>
       ) : (
@@ -66,6 +82,9 @@ const ForgotPassword = ({ history }) => {
         </button>
       </form>
     </div>
+    </div>
+    </div>
+
   );
 };
 

@@ -3,6 +3,7 @@ import Quill from 'quill';
 import "quill/dist/quill.snow.css"
 import io from 'socket.io-client';
 import { useNavigate, useParams,useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const TOOLBAR_OPTIONS = [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -23,6 +24,12 @@ const TextEditor = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    //^Redirect if auth
+
+    const { user } = useSelector((state) => ({ ...state }));
+    // setUser(user)
+
+    console.log("user ============>",user);
 
     console.log("location.data",location);
 
@@ -45,7 +52,7 @@ const TextEditor = () => {
         if (socket == null || quill == null) return;
 
         const interval =setInterval(() => {
-            socket.emit('save-document',quill.getContents())
+            socket.emit('save-document',{data:quill.getContents(),email:user ? user.email: 'public'})
         }, SAVE_INTERVAL_MS);
 
         return () =>{
@@ -107,10 +114,10 @@ const TextEditor = () => {
         })
 
         //Get the document ID and contents
-        socket.emit('get-document', documentId)
+        socket.emit('get-document', ({documentId,email:user ? user.email: 'public'}))
 
 
-    }, [socket, quill, documentId])
+    }, [socket, quill, documentId,user])
 
 
     const wrapperRef = useCallback((wrapper) => {

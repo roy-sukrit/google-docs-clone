@@ -24,10 +24,12 @@ io.on("connection", socket => {
     console.warn("Connection Success Socket.io Server");
 
     //Socket to load/create doc data
-    socket.on("get-document", async documentId => {
+    socket.on("get-document", async ({documentId,email}) => {
         console.warn("get-document called");
+        console.warn("get-document called",documentId,email);
 
-        const document = await findOrCreateDocument(documentId);
+
+        const document = await findOrCreateDocument(documentId,email);
 
         //Putting the user in the room socket
         socket.join(documentId)
@@ -46,8 +48,10 @@ io.on("connection", socket => {
         })
 
         //To save data
-        socket.on("save-document", async data => {
-            await Document.findByIdAndUpdate(documentId, { data })
+        socket.on("save-document", async ({data,email}) => {
+            console.warn("save-documen called",data,email);
+
+            await Document.findByIdAndUpdate(documentId, { data,email })
         })
 
     })
@@ -55,23 +59,23 @@ io.on("connection", socket => {
 
 
 //Func To Handle Doc CRUD Opertaion
-async function findOrCreateDocument(id) {
+async function findOrCreateDocument(id,email) {
     if (id == null) return;
 
     const document = await Document.findById(id)
     if (document) return document
-    return await Document.create({ _id: id, data: defaultValue })
+    return await Document.create({ _id: id, data: defaultValue,email })
 
 }
 
 
 //HTTP Server
 const server = http.createServer(async (req, res) => {
-// Set CORS headers
-res.setHeader('Access-Control-Allow-Origin', '*'); // Replace with your React app's domain
-res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Add the HTTP methods you want to support
-res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Add the headers you want to support
-res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests use credentials (cookies, etc.)
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Replace with your React app's domain
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Add the HTTP methods you want to support
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Add the headers you want to support
+    res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests use credentials (cookies, etc.)
 
     console.log("req.url", req.url);
     if (req.method === 'OPTIONS') {
@@ -87,8 +91,8 @@ res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests u
         try {
 
 
-            const data = await Document.find({}, { projection: { data: 0 } })
-            .sort({ updatedAt: -1 });
+            const data = await Document.find({email:'public'}, { projection: { data: 0 } })
+                .sort({ updatedAt: -1 });
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(data));
         }
@@ -98,7 +102,7 @@ res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests u
 
         }
 
-    } 
+    }
     // else if (req.method === 'PUT' && req.url === '/api/updateTitle') {
 
 
@@ -119,7 +123,7 @@ res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests u
 
     //     // if(output){
 
-        
+
 
     //     // res.end(JSON.stringify('Success'));
     //     // }
@@ -135,8 +139,8 @@ res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests u
     // }
 
     // } 
-    else if(req.method === 'POST' && req.url === '/api/delete'){
-        
+    else if (req.method === 'POST' && req.url === '/api/delete') {
+
         try {
 
             let body = '';
@@ -145,33 +149,76 @@ res.setHeader('Access-Control-Allow-Credentials', 'true'); // If your requests u
             });
             req.on('end', async () => {
                 body = JSON.parse(body)
-                console.log("req delete",body.id);
+                console.log("req delete", body.id);
                 const output = await Document.findByIdAndDelete(body.id);
 
 
-            console.log("output",output);
+                console.log("output", output);
 
 
 
-            if(output){
+                if (output) {
 
-            
 
-            res.end(JSON.stringify('Success'));
-            }
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+
+                    res.end(JSON.stringify('Success'));
+                }
 
             });
 
 
         }
         catch (error) {
-            console.log("Error in /api/delete",error);
+            console.log("Error in /api/delete", error);
             res.end(JSON.stringify({ error }));
 
         }
 
 
-    }else {
+    }
+
+    else if (req.method === 'POST' && req.url === '/api/userDocuments') {
+
+        try {
+
+            let body = '';
+            req.on('data', chunk => {
+                console.log("chunk", chunk);
+                body += chunk.toString(); // convert Buffer to string
+                console.log("req data", body);
+
+            });
+            req.on('end', async () => {
+                body = JSON.parse(body);
+                // console.log("req userDocuments",body);
+                const output = await Document.find({ email: body.email});
+
+
+                console.log("output", output);
+
+
+
+                if (output) {
+
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+
+                    res.end(JSON.stringify(output));
+                }
+
+            });
+
+
+        }
+        catch (error) {
+            console.log("Error in /api/userDocuments", error);
+            res.end(JSON.stringify({ error }));
+
+        }
+
+
+    } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Not Found' }));
     }

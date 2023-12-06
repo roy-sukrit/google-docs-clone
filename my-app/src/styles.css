@@ -8,6 +8,18 @@ body{
     margin: 0;
 }
 
+.illustration-wrapper {
+  display: flex;
+  align-items: flex-end;
+  max-width: 800px;
+  min-height: 100%;
+  background-color: #fffdf2;
+}
+.illustration-wrapper img {
+  display: block;
+  width: 100%;
+}
+
 .container .ql-editor{
     width: 8.5in;
     min-height: 11in;
@@ -44,6 +56,7 @@ body{
 
     body{
         background: none;
+        
     }
     
     .container .ql-editor{
@@ -60,3 +73,4 @@ body{
         display: none;
     }
 }
+

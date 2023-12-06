@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import {  signInWithEmailAndPassword,signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 import { auth, googleAuthProvider } from "../../firebase";
 import { toast } from "react-toastify";
 import { Button } from "antd";
 import { MailOutlined, GoogleOutlined } from "@ant-design/icons";
-import { useDispatch,useSelector } from "react-redux";
-import {Link} from 'react-router-dom'
-import { useNavigate  } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -23,21 +23,21 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);    
+    setLoading(true);
     try {
-      const result = await signInWithEmailAndPassword(auth,email, password);
-      const { user } = result;      
-          dispatch({
-            type: "LOGGED_IN_USER",
-            payload: {
-              name:user.displayName ? user.displayName :user.email.split('@')[0],
-              email:user.email,
-            },
-          });
-       history.push("/")
-   
-      }
-    
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const { user } = result;
+      dispatch({
+        type: "LOGGED_IN_USER",
+        payload: {
+          name: user.displayName ? user.displayName : user.email.split('@')[0],
+          email: user.email,
+        },
+      });
+      history.push("/user/documents")
+
+    }
+
     catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -46,33 +46,34 @@ const Login = () => {
   };
 
   const googleLogin = async () => {
-    
-    signInWithPopup(auth,googleAuthProvider)
+
+    signInWithPopup(auth, googleAuthProvider)
       .then(async (result) => {
         const { user } = result;
-        console.log("user login google--->",user)
-          if(user && user.emailVerified == true){
+        console.log("user login google--->", user)
+        if (user && user.emailVerified == true) {
           dispatch({
             type: "LOGGED_IN_USER",
             payload: {
-              name:user.displayName,
-              email:user.email,
+              name: user.displayName,
+              email: user.email,
             },
-          });          
+          });
 
-          console.log("Login Success",history);
+          console.log("Login Success", history);
 
-         history("/");
+          history("/user/documents");
 
-        }})      
-      .catch(err=>toast.error(err))
+        }
+      })
+      .catch(err => toast.error(err))
 
-      
+
   };
 
   const loginForm = () => (
     <form onSubmit={handleSubmit}>
-        <div className="form-group">
+      <div className="form-group">
         <input
           type="email"
           className="form-control"
@@ -110,36 +111,47 @@ const Login = () => {
   );
 
   return (
-    <div className="container p-5">
-      <div className="row">
+    <div className="d-flex flex-row bd-highlight justify-content-start flex-wrap">
+      <div className="bd-highlight">
 
-        
-        <div className="col-md-6 offset-md-3">
-          {loading ? (
-            <h4 className="text-danger">Loading...</h4>
-          ) : (
-            <h4>Login</h4>
-          )}
+        <img
+          src="https://mixkit.imgix.net/art/preview/mixkit-left-handed-man-sitting-at-a-table-writing-in-a-notebook-27-original-large.png?q=80&auto=format%2Ccompress&h=700" // Replace with the actual URL of your image
+          alt="Login Image"
+          style={{ width: '100%', height: '100%' }}
+        />
 
+      </div>
 
-          {loginForm()}
+      <div className="bd-highlight p-5 mt-5 mx-auto">
+        <p className="form-title">Welcome back ✅</p>
 
-          <Button
-            onClick={googleLogin}
-            type="danger"
-            className="mb-3"
-            block
-            shape="round"
-            icon={<GoogleOutlined />}
-            size="large"
-          >
-            Login with Google
-          </Button>
-          <Link to="/forgot/password" className="float-right text-danger">Forgot Password?</Link>
-        </div>
+        {loading ? (
+          <p className="text-danger">Loading...</p>
+        ) : (
+          <p>Login to the Dashboard</p>
+
+        )}
+
+        {loginForm()}
+
+        <Button
+          onClick={googleLogin}
+          type="danger"
+          className="mb-3"
+          block
+          shape="round"
+          icon={<GoogleOutlined />}
+          size="large"
+        >
+          Login with Google
+        </Button>
+        <Link to="/forgot/password" className="float-right text-danger">
+          Forgot Password?
+        </Link>
       </div>
     </div>
+
   );
-};
+}
 
 export default Login;

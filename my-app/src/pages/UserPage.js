@@ -7,13 +7,23 @@ import { Card, Row, Col,message} from 'antd';
 import { v4 as uuidV4 } from "uuid"
 
 import axios from 'axios'
-const Home = () => {
+import { useSelector } from 'react-redux';
+const UserPage = ({props}) => {
+
+  console.log("props",props);
   const [form] = Form.useForm();
   const navigate = useNavigate()
   const [data, setData] = useState([]);
   const [id, setId] = useState();
+  const [users, setUser] = useState();
 
-  
+    //^Redirect if auth
+
+    const { user } = useSelector((state) => ({ ...state }));
+    // setUser(user)
+
+    console.log("user ============>",user);
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const [loadApi, contextHolderLoad] = message.useMessage();
@@ -46,6 +56,7 @@ const Home = () => {
   
 
   const success = () => {
+
     messageApi.open({
       type: 'success',
       content: 'Delete Succesful!',
@@ -60,17 +71,23 @@ const Home = () => {
   };
 
   useEffect(() => {
+    // const { user } = useSelector((state) => ({ ...state }));
+
     //Fetching Latest Documents
     fetchData('LOAD');
-  }, []);
+  }, [user]);
 
 
   
   async function fetchData(operation) {
+
+    if(user){
     openMessage(operation)
 
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/documents`,{})
+    const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/userDocuments`,{email:user.email})
       .catch(error => console.error('Error fetching data:', error));
+
+      console.log("response",response);
     if (response && response.data) {
 
       setData(response.data)
@@ -78,6 +95,7 @@ const Home = () => {
 
     
     }
+  }
 
 
   }
@@ -126,12 +144,11 @@ const handleDelete =async (id) =>{
 
 }
 
+
   return (
     <div style={{ padding: '20px' }}>
       <div style={{ marginBottom: '20px' }}>
-      <h1 style={{ fontFamily: "Verdana, Geneva, sans-serif" }}>
-  All Documents 🚀
-</h1>
+        <h1  style={{ fontFamily: "Verdana, Geneva, sans-serif" }}>Hello {user? user.name : 'Loading...'} 😊: Your Documents</h1>
       </div>
       <Row gutter={[20, 20]} >
       <Col key={'create'} xs={24} sm={12} md={8} lg={6} xl={4}>
@@ -143,7 +160,7 @@ const handleDelete =async (id) =>{
           >
             <PlusOutlined style={{ fontSize: '48px' }} />
 
-            <div style={{ textAlign: 'center', fontSize: '18px' ,fontFamily: "Verdana, Geneva, sans-serif" }}>
+            <div style={{ textAlign: 'center', fontSize: '18px',fontFamily: "Verdana, Geneva, sans-serif"  }}>
               Create Document
             </div>
             <br/>
@@ -155,7 +172,7 @@ const handleDelete =async (id) =>{
          <Space key={'Space1'}>{contextHolderLoad}</Space>
         <Space key={'Space2'}>{contextHolder}</Space>  
 
-        {data.map((document, index) => (
+        {data && data.map((document, index) => (
           <Col key={document._id} xs={24} sm={12} md={8} lg={6} xl={4}>
             <Card
               style={{ width: '100%',height:'100%' }}
@@ -187,4 +204,4 @@ const handleDelete =async (id) =>{
 
 };
 
-export default Home
+export default UserPage;
