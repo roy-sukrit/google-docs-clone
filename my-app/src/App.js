@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Spin, Space } from 'antd';
 import { auth } from "./firebase";
 import UserPage from "./pages/UserPage";
-import PrivateRoute from "./protectedRoute";
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
